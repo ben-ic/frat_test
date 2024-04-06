@@ -4,6 +4,23 @@ defmodule FratTestV2Web.UserSessionController do
   alias FratTestV2.Accounts
   alias FratTestV2Web.UserAuth
 
+  def login_challenge(conn, _params) do
+    # The home page is often custom made,
+    # so skip the default app layout.
+    render(conn, :login_challenge)
+  end
+
+  def auth_otp(conn, params = %{"token" => token}) do
+    case FratTestV2.Token.verify_and_validate(token) do
+      {:ok, _claims} ->
+          conn |> put_session(:passed_otp, true) |> redirect(to: "/invoices") |> halt()
+      _ ->  conn |> redirect(to: "/login_challenge") |> halt()
+    end
+    # The home page is often custom made,
+    # so skip the default app layout.
+    conn |> redirect(to: "/invoices") |> halt()
+  end
+
   def create(conn, %{"_action" => "registered"} = params) do
     #create(conn, params, "Account created successfully!")
     conn

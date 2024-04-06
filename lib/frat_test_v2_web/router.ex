@@ -11,6 +11,7 @@ defmodule FratTestV2Web.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :check_otp_auth
     plug :maybe_add_tracker
   end
 
@@ -75,9 +76,11 @@ defmodule FratTestV2Web.Router do
 
   scope "/", FratTestV2Web do
     pipe_through [:browser, :require_authenticated_user]
+    get "/login_challenge", UserSessionController, :login_challenge
+    get "/auth_otp/:token", UserSessionController, :auth_otp
 
     live_session :require_authenticated_user,
-      on_mount: [{FratTestV2Web.UserAuth, :ensure_authenticated}] do
+      on_mount: [{FratTestV2Web.UserAuth, :ensure_authenticated}, {FratTestV2Web.UserAuth, :ensure_otp}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/invoices", InvoiceLive.Index, :index

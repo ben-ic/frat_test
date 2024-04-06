@@ -1,0 +1,32 @@
+
+<div class="mx-auto max-w-sm">
+    <form action="" id="otpForm">
+        <.header class="text-center">
+            We sent you a 5 digit one time password to your cell phone
+        </.header>
+
+        <div class="mt-10 space-y-8 bg-white">
+            <input type="text" id="otp_code" placeholder="Enter the OTP code" class="phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6">
+            <div class="mt-2 flex items-center justify-between gap-6">
+                <button type="submit" class="w-full phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    let otpForm = document.getElementById("otpForm");
+
+    otpForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let otpCode = document.getElementById("otp_code");
+
+        if (otpCode.value == "") {
+            alert("Please fill out your OTP code ");
+        } else {
+            // perform operation with form input
+            checkOtp(otpCode.value)
+        }
+    });
+</script>

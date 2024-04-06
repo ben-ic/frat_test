@@ -1,3 +1,56 @@
+<div class="w-screen">
+    <div class="grid gap-4 lg:gap-8 md:grid-cols-3 p-8 pt-20">
+        
+        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
+            <div class="space-y-2">
+                <div
+                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
+                    <span>Unpaid Invoices</span>
+                </div>
+
+                <div class="text-3xl">
+                    50
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
+            <div class="space-y-2">
+                <div
+                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
+
+                    <span>Paid Invoices</span>
+                </div>
+
+                <div class="text-3xl">
+                    221
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
+            <div class="space-y-2">
+                <div
+                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
+
+                    <span>Withdrawn Amount</span>
+                </div>
+
+                <div class="text-3xl">
+                    224.75
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <.header>
   Listing Invoices
   <:actions>
@@ -16,20 +69,6 @@
   <:col :let={{_id, invoice}} label="Description"><%= invoice.description %></:col>
   <:col :let={{_id, invoice}} label="Status"><%= invoice.status %></:col>
   <:col :let={{_id, invoice}} label="Payor email"><%= invoice.payor_email %></:col>
-  <:action :let={{_id, invoice}}>
-    <div class="sr-only">
-      <.link navigate={~p"/invoices/#{invoice}"}>Show</.link>
-    </div>
-    <.link patch={~p"/invoices/#{invoice}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, invoice}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: invoice.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
 </.table>
 
 <.modal :if={@live_action in [:new, :edit]} id="invoice-modal" show on_cancel={JS.patch(~p"/invoices")}>
@@ -39,6 +78,7 @@
     title={@page_title}
     action={@live_action}
     invoice={@invoice}
+    current_user={@current_user}
     patch={~p"/invoices"}
   />
 </.modal>

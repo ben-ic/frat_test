@@ -62,7 +62,8 @@ defmodule FratTestV2.MixProject do
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
       {:hammer, "~> 6.0"},
-      {:hammer_plug, "~> 3.0"}
+      {:hammer_plug, "~> 3.0"},
+      {:joken, "~> 2.5"},
     ]
   end
 

@@ -6,4 +6,6 @@ defmodule FratTestV2Web.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+
 end

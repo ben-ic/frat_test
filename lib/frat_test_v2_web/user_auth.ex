@@ -35,7 +35,8 @@ defmodule FratTestV2Web.UserAuth do
     |> renew_session()
     |> put_token_in_session(token)
     |> maybe_write_remember_me_cookie(token, params)
-    |> redirect(to: user_return_to || signed_in_path(conn))
+    |> redirect(to: signed_in_path(conn))
+    #|> redirect(to: user_return_to || signed_in_path(conn))
   end
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
@@ -94,6 +95,14 @@ defmodule FratTestV2Web.UserAuth do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
     assign(conn, :current_user, user)
+  end
+
+  def check_otp_auth(conn, _opts) do
+    if get_session(conn, :pass_otp) do
+      assign(conn, :pass_otp, true)
+    else
+      assign(conn, :pass_otp, false)
+    end
   end
 
   defp ensure_user_token(conn) do
@@ -186,6 +195,19 @@ defmodule FratTestV2Web.UserAuth do
     end
   end
 
+  def on_mount(:ensure_otp, _params, session, socket) do
+    if session["passed_otp"] do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must have passed OTP to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/login_challenge")
+
+      {:halt, socket}
+    end
+  end
+
   def on_mount(:redirect_if_user_is_authenticated, _params, session, socket) do
     socket = mount_current_user(socket, session)
 
@@ -235,6 +257,18 @@ defmodule FratTestV2Web.UserAuth do
     end
   end
 
+  def require_otp(conn, _opts) do
+    if conn.assigns[:passed_otp] do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must have passed OTP to access this page.")
+      |> maybe_store_return_to()
+      |> redirect(to: ~p"/users/log_in")
+      |> halt()
+    end
+  end
+
   defp put_token_in_session(conn, token) do
     conn
     |> put_session(:user_token, token)
@@ -247,5 +281,11 @@ defmodule FratTestV2Web.UserAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp signed_in_path(_conn), do: ~p"/"
+  defp signed_in_path(conn) do
+    if(conn.assigns[:passed_otp]) do
+      ~p"/invoices"
+    else
+      ~p"/login_challenge"
+    end
+  end
 end

@@ -17,8 +17,10 @@ defmodule FratTestV2.Money do
       [%Invoice{}, ...]
 
   """
-  def list_invoices do
-    Repo.all(Invoice)
+  def list_invoices(user) do
+    Invoice
+    |> user_invoices_query(user.id)
+    |> Repo.all()
   end
 
   @doc """
@@ -49,9 +51,11 @@ defmodule FratTestV2.Money do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_invoice(attrs \\ %{}) do
+  def create_invoice(user, attrs \\ %{}) do
+    IO.inspect user
     %Invoice{}
     |> Invoice.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
@@ -100,5 +104,9 @@ defmodule FratTestV2.Money do
   """
   def change_invoice(%Invoice{} = invoice, attrs \\ %{}) do
     Invoice.changeset(invoice, attrs)
+  end
+
+  defp user_invoices_query(query, user_id) do
+    from(v in query, where: v.user_id == ^user_id)
   end
 end

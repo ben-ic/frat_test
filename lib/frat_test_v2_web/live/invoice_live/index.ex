@@ -6,7 +6,7 @@ defmodule FratTestV2Web.InvoiceLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :invoices, Money.list_invoices())}
+    {:ok, stream(socket, :invoices, Money.list_invoices(socket.assigns.current_user))}
   end
 
   @impl true

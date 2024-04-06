@@ -71,7 +71,8 @@ defmodule FratTestV2Web.InvoiceLive.FormComponent do
   end
 
   defp save_invoice(socket, :new, invoice_params) do
-    case Money.create_invoice(invoice_params) do
+    IO.inspect socket.assigns.current_user
+    case Money.create_invoice(socket.assigns.current_user, invoice_params) do
       {:ok, invoice} ->
         notify_parent({:saved, invoice})
 

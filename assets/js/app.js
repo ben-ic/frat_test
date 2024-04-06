@@ -21,6 +21,12 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
+
+const apolloClient = new ApolloClient({
+  uri: '/api/graphql',
+  cache: new InMemoryCache(),
+});
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
@@ -41,4 +47,43 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+
+window.checkOtp = function checkOtp(code) {
+  apolloClient
+  .query({
+    query: gql`
+      {
+        otp(otp: "${code}") {
+          result
+        }
+      }
+    `,
+  })
+  .then((result) => {return updateOtpResult(result.data.otp.result)});
+}
+
+window.updateOtpResult = function updateOtpResult(result) {
+  apolloClient.mutate({
+    mutation: gql`
+      mutation{
+        passOtp(result: "${result}"){
+          result,
+          msg,
+          token
+        }
+      }`,
+  }).then((result) => { 
+    console.log(result)
+    if(result.data.passOtp.result=="failed"){
+      alert(result.data.passOtp.msg)
+    }
+    if(result.data.passOtp.result=="passed"){
+      window.location.href = '/auth_otp/'+result.data.passOtp.token
+    }
+  })
+}
+
+
+
 
