@@ -86,6 +86,7 @@ defmodule FratTestV2Web.Router do
       live "/invoices", InvoiceLive.Index, :index
       live "/invoices/new", InvoiceLive.Index, :new
       live "/invoices/:id/edit", InvoiceLive.Index, :edit
+      live "/invoices/withdraw", InvoiceLive.Index, :withdraw
 
       live "/invoices/:id", InvoiceLive.Show, :show
       live "/invoices/:id/show/edit", InvoiceLive.Show, :edit

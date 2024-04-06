@@ -23,6 +23,44 @@ defmodule FratTestV2.Money do
     |> Repo.all()
   end
 
+  def get_paid_invoices(user) do
+    Repo.one(
+      from i in Invoice,
+        where: i.user_id == ^user.id and i.status==:paid,
+        select: sum(i.amount),
+        group_by: i.status
+    )
+  end
+
+  def get_unpaid_invoices(user) do
+    Repo.one(
+      from i in Invoice,
+        where: i.user_id == ^user.id and i.status==:sent,
+        select: sum(i.amount),
+        group_by: i.status
+    )
+  end
+
+
+  def get_withdrawn_invoices(user) do
+    Repo.one(
+      from i in Invoice,
+        where: i.user_id == ^user.id and i.status==:withdrawn,
+        select: sum(i.amount),
+        group_by: i.status
+    )
+  end
+
+  def withdraw_invoices(user) do
+    IO.inspect "WITHDRAW MONEY"
+    from(
+      i in Invoice,
+      where: i.user_id == ^user.id and i.status==:paid,
+      update: [set: [status: :withdrawn]]
+    )
+    |> Repo.update_all([])
+    |>IO.inspect
+  end
   @doc """
   Gets a single invoice.
 

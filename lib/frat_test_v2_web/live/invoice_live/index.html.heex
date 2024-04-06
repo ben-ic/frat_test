@@ -1,4 +1,4 @@
-<div class="w-screen">
+<div class="w-full">
     <div class="grid gap-4 lg:gap-8 md:grid-cols-3 p-8 pt-20">
         
         <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
@@ -8,8 +8,8 @@
                     <span>Unpaid Invoices</span>
                 </div>
 
-                <div class="text-3xl">
-                    50
+                <div class="text-3xl text-white">
+                    <%= @unpaid_invoices %>
                 </div>
 
             </div>
@@ -24,8 +24,8 @@
                     <span>Paid Invoices</span>
                 </div>
 
-                <div class="text-3xl">
-                    221
+                <div class="text-3xl text-white">
+                    <%= @paid_invoices %>
                 </div>
 
             </div>
@@ -40,9 +40,12 @@
                     <span>Withdrawn Amount</span>
                 </div>
 
-                <div class="text-3xl">
-                    224.75
+                <div class="text-3xl text-white">
+                    <%= @withdrawn_invoices %>
                 </div>
+                <.link patch={~p"/invoices/withdraw"} class="btn btn-sm">
+                  <.button>Withdraw Money</.button>
+                </.link>
 
             </div>
 
@@ -82,3 +85,16 @@
     patch={~p"/invoices"}
   />
 </.modal>
+
+<.modal :if={@live_action in [:withdraw]} id="withdraw-modal" show on_cancel={JS.patch(~p"/invoices")}>
+  <.live_component
+    module={FratTestV2Web.InvoiceLive.WithdrawMoneyComponent}
+    id={:withdraw}
+    paid_invoices = {@paid_invoices}
+    title={@page_title}
+    action={@live_action}
+    current_user={@current_user}
+    patch={~p"/invoices"}
+  />
+</.modal>
+
