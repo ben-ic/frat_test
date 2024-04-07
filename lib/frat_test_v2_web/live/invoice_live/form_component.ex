@@ -72,17 +72,24 @@ defmodule FratTestV2Web.InvoiceLive.FormComponent do
 
   defp save_invoice(socket, :new, invoice_params) do
 
-    case Money.create_invoice(socket.assigns.current_user, invoice_params) do
-      {:ok, invoice} ->
-        notify_parent({:saved, invoice})
+    if check_invoice_rate_limit(socket.id) do
+      case Money.create_invoice(socket.assigns.current_user, invoice_params) do
+        {:ok, invoice} ->
+          notify_parent({:saved, invoice})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Invoice created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+          {:noreply,
+          socket
+          |> put_flash(:info, "Invoice created successfully")
+          |> push_patch(to: socket.assigns.patch)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        {:error, %Ecto.Changeset{} = changeset} ->
+          {:noreply, assign_form(socket, changeset)}
+      end
+    else
+      {:noreply,
+        socket
+        |> put_flash(:error, "An unexpected error occured")
+        |> push_patch(to: socket.assigns.patch)}
     end
   end
 
@@ -91,4 +98,13 @@ defmodule FratTestV2Web.InvoiceLive.FormComponent do
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+
+  defp check_invoice_rate_limit(socket_id) do
+    with {:allow, count} <- Hammer.check_rate("socket_id:#{socket_id}", 300_000, 10)
+    do
+      true
+    else
+      {:deny, _count} -> false
+    end
+  end
 end
