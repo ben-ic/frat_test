@@ -13,7 +13,6 @@ defmodule FratTestV2Web.InvoiceLive.WithdrawMoneyComponent do
   end
 
   def handle_event("cancel", _params, socket) do
-    IO.inspect("here")
 
     {:noreply,
      socket

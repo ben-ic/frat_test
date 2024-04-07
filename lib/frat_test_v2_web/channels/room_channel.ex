@@ -13,7 +13,6 @@ defmodule FratTestV2Web.RoomChannel do
 
   def join("room:" <> private_room_id, payload, socket) do
     if authorized?(payload) do
-      IO.inspect("joined" <> private_room_id)
 
       socket =
         socket
@@ -39,7 +38,6 @@ defmodule FratTestV2Web.RoomChannel do
                 Payor: #{invoice.payor_email}<br/>
                 Status: #{invoice.status}<br/><br/>"
     end)
-    |> IO.inspect
 
     broadcast!(socket, "new_msg", %{from: "Tabbit", body: message})
 

@@ -51,15 +51,12 @@ defmodule FratTestV2.Money do
   end
 
   def withdraw_invoices(user) do
-    IO.inspect("WITHDRAW MONEY")
-
     from(
       i in Invoice,
       where: i.user_id == ^user.id and i.status == :paid,
       update: [set: [status: :withdrawn]]
     )
     |> Repo.update_all([])
-    |> IO.inspect()
   end
 
   @doc """
@@ -91,7 +88,6 @@ defmodule FratTestV2.Money do
 
   """
   def create_invoice(user, attrs \\ %{}) do
-    IO.inspect(user)
 
     %Invoice{}
     |> Invoice.changeset(attrs)

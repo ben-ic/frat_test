@@ -55,7 +55,6 @@ defmodule FratTestV2Web.UserRegistrationLive do
 
   @spec handle_event(<<_::32, _::_*32>>, map(), any()) :: {:noreply, any()}
   def handle_event("save", %{"user" => user_params}, socket) do
-    IO.inspect("SAVE")
 
     if can_create(socket) do
       case Accounts.register_user(user_params) do
@@ -80,7 +79,6 @@ defmodule FratTestV2Web.UserRegistrationLive do
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
-    IO.inspect("VALIDATE")
     changeset = Accounts.change_user_registration(%User{}, user_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
@@ -96,8 +94,6 @@ defmodule FratTestV2Web.UserRegistrationLive do
   end
 
   def can_create(socket) do
-    IO.inspect("HEFE I AM")
-    IO.inspect(Hammer.inspect_bucket("tracking_ip:#{socket.assigns.ip_address}", 600_000, 10))
 
     with {:allow, count} <- check_tracking_cookie_rate(socket.assigns.tracking_cookie, 0),
          {:allow, count} <- check_ip_rate(socket.assigns.ip_address, 0) do

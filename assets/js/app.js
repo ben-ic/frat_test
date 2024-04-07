@@ -75,7 +75,6 @@ window.updateOtpResult = function updateOtpResult(result) {
         }
       }`,
   }).then((result) => { 
-    console.log(result)
     if(result.data.passOtp.result=="failed"){
       alert(result.data.passOtp.msg)
     }
