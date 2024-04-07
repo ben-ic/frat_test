@@ -64,8 +64,7 @@ config :phoenix, :json_library, Jason
 config :joken, default_signer: "jppSV4NLfVrJuaRTKSGw46IrxDA6dBgkX+E75RQmIKDmPik3y1rnxCwS9rPL9dPZ"
 
 config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4,
-                                 cleanup_interval_ms: 60_000 * 10]}
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

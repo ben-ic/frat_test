@@ -7,10 +7,13 @@ defmodule FratTestV2Web.InvoiceLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
-    socket = socket
-              |> assign(:paid_invoices, get_paid_invoices(user))
-              |> assign(:unpaid_invoices, get_unpaid_invoices(user))
-              |> assign(:withdrawn_invoices, get_withdrawn_invoices(user))
+
+    socket =
+      socket
+      |> assign(:paid_invoices, get_paid_invoices(user))
+      |> assign(:unpaid_invoices, get_unpaid_invoices(user))
+      |> assign(:withdrawn_invoices, get_withdrawn_invoices(user))
+
     {:ok, stream(socket, :invoices, Money.list_invoices(user))}
   end
 
@@ -41,7 +44,6 @@ defmodule FratTestV2Web.InvoiceLive.Index do
     socket
     |> assign(:page_title, "Withdraw Money")
   end
-
 
   @impl true
   def handle_info({FratTestV2Web.InvoiceLive.FormComponent, {:saved, invoice}}, socket) do

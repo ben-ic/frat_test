@@ -28,10 +28,13 @@ defmodule FratTestV2Web.UserForgotPasswordLive do
   end
 
   def mount(_params, _session, socket) do
+    IO.inspect("MOUNTED")
     {:ok, assign(socket, form: to_form(%{}, as: "user"))}
   end
 
   def handle_event("send_email", %{"user" => %{"email" => email}}, socket) do
+    IO.inspect("Send Reset")
+
     if user = Accounts.get_user_by_email(email) do
       Accounts.deliver_user_reset_password_instructions(
         user,
@@ -45,6 +48,16 @@ defmodule FratTestV2Web.UserForgotPasswordLive do
     {:noreply,
      socket
      |> put_flash(:info, info)
+     |> redirect(to: ~p"/")}
+  end
+
+  def handle_event("send_email", params, socket) do
+    IO.inspect("Send Reset")
+    IO.inspect("params")
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "blah")
      |> redirect(to: ~p"/")}
   end
 end

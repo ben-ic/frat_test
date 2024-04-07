@@ -23,6 +23,7 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
 
+
 const apolloClient = new ApolloClient({
   uri: '/api/graphql',
   cache: new InMemoryCache(),
@@ -84,6 +85,50 @@ window.updateOtpResult = function updateOtpResult(result) {
   })
 }
 
+let socket = new Socket("/socket", {params: {token: window.userToken}})
+
+socket.connect()
+let channel = socket.channel("room:"+ window.roomToken, {})
+let messagesContainer = document.querySelector("#messages")
+let chatForm = document.querySelector("#chatForm");
+  chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      let chatInput = document.getElementById("chat-input");
+
+      channel.push("new_msg", {body: chatInput.value})
+      chatInput.value = ""
+  });
+
+channel.on("new_msg", payload => {
+  messagesContainer.insertAdjacentHTML('beforeend', messageTemplate(payload))
+
+  function messageTemplate(msg){
+    let from = msg.from
+    let body = msg.body
+
+    return(`<li>
+    <article
+      tabindex="0"
+      class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500"
+    >
+      <span class="flex-none pt-1 pr-2">
+        <img
+          class="h-8 w-8 rounded-md"
+          src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png"
+        />
+      </span>
+      <div class="flex-1">
+        <header class="mb-1">${from} wrote:</header>
+        <p class="text-gray-600">${body}</p>
+      </div>
+    </article>
+    </li>`)
+  }
+})
 
 
 
+channel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })

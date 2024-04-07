@@ -13,6 +13,7 @@ defmodule FratTestV2Web.Router do
     plug :fetch_current_user
     plug :check_otp_auth
     plug :maybe_add_tracker
+    plug :put_room_token
   end
 
   pipeline :api do
@@ -28,12 +29,9 @@ defmodule FratTestV2Web.Router do
   scope "/api" do
     pipe_through :api
 
-    forward "/graphiql", Absinthe.Plug.GraphiQL,
-      schema: FratTestV2Web.Graphql.Schema
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: FratTestV2Web.Graphql.Schema
 
-    forward "/", Absinthe.Plug,
-      schema: FratTestV2Web.Graphql.Schema
-
+    forward "/", Absinthe.Plug, schema: FratTestV2Web.Graphql.Schema
   end
 
   # Other scopes may use custom stacks.
@@ -42,21 +40,21 @@ defmodule FratTestV2Web.Router do
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:frat_test_v2, :dev_routes) do
+  #if Application.compile_env(:frat_test_v2, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
     # you can use Plug.BasicAuth to set up some basic authentication
     # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
+    #import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: FratTestV2Web.Telemetry
+      #live_dashboard "/dashboard", metrics: FratTestV2Web.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
-  end
+  #end
 
   ## Authentication routes
 
@@ -64,7 +62,10 @@ defmodule FratTestV2Web.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
-      on_mount: [{FratTestV2Web.UserAuth, :redirect_if_user_is_authenticated}, {FratTestV2Web.UserAuth, :mount_tracking_info}] do
+      on_mount: [
+        {FratTestV2Web.UserAuth, :redirect_if_user_is_authenticated},
+        {FratTestV2Web.UserAuth, :mount_tracking_info}
+      ] do
       live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
@@ -80,7 +81,10 @@ defmodule FratTestV2Web.Router do
     get "/auth_otp/:token", UserSessionController, :auth_otp
 
     live_session :require_authenticated_user,
-      on_mount: [{FratTestV2Web.UserAuth, :ensure_authenticated}, {FratTestV2Web.UserAuth, :ensure_otp}] do
+      on_mount: [
+        {FratTestV2Web.UserAuth, :ensure_authenticated},
+        {FratTestV2Web.UserAuth, :ensure_otp}
+      ] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/invoices", InvoiceLive.Index, :index

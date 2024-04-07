@@ -21,7 +21,12 @@ defmodule FratTestV2.MoneyTest do
     end
 
     test "create_invoice/1 with valid data creates a invoice" do
-      valid_attrs = %{status: 42, description: "some description", amount: 120.5, payor_email: "some payor_email"}
+      valid_attrs = %{
+        status: 42,
+        description: "some description",
+        amount: 120.5,
+        payor_email: "some payor_email"
+      }
 
       assert {:ok, %Invoice{} = invoice} = Money.create_invoice(valid_attrs)
       assert invoice.status == 42
@@ -36,7 +41,13 @@ defmodule FratTestV2.MoneyTest do
 
     test "update_invoice/2 with valid data updates the invoice" do
       invoice = invoice_fixture()
-      update_attrs = %{status: 43, description: "some updated description", amount: 456.7, payor_email: "some updated payor_email"}
+
+      update_attrs = %{
+        status: 43,
+        description: "some updated description",
+        amount: 456.7,
+        payor_email: "some updated payor_email"
+      }
 
       assert {:ok, %Invoice{} = invoice} = Money.update_invoice(invoice, update_attrs)
       assert invoice.status == 43

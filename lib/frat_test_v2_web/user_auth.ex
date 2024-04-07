@@ -36,7 +36,8 @@ defmodule FratTestV2Web.UserAuth do
     |> put_token_in_session(token)
     |> maybe_write_remember_me_cookie(token, params)
     |> redirect(to: signed_in_path(conn))
-    #|> redirect(to: user_return_to || signed_in_path(conn))
+
+    # |> redirect(to: user_return_to || signed_in_path(conn))
   end
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
@@ -97,6 +98,15 @@ defmodule FratTestV2Web.UserAuth do
     assign(conn, :current_user, user)
   end
 
+  def put_room_token(conn, _) do
+    if current_user = conn.assigns[:current_user] do
+      token = Base.encode64(current_user.email)
+      assign(conn, :room_token, token)
+    else
+      conn
+    end
+  end
+
   def check_otp_auth(conn, _opts) do
     if get_session(conn, :pass_otp) do
       assign(conn, :pass_otp, true)
@@ -119,14 +129,14 @@ defmodule FratTestV2Web.UserAuth do
     end
   end
 
-
   def maybe_add_tracker(conn, _opts) do
     conn = fetch_cookies(conn, signed: [@tracking_cookie])
     tracking_cookie = conn.cookies[@tracking_cookie]
+
     if tracking_cookie do
       conn
     else
-      token = :crypto.strong_rand_bytes(32)|>Base.url_encode64(padding: false)
+      token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
       put_resp_cookie(conn, @tracking_cookie, token, @tracking_cookie_options)
     end
     |> put_session(:tracking_cookie, conn.cookies[@tracking_cookie])
@@ -174,10 +184,9 @@ defmodule FratTestV2Web.UserAuth do
 
   def on_mount(:mount_tracking_info, _params, session, socket) do
     {:cont,
-      socket
-      |> Phoenix.Component.assign_new(:tracking_cookie, fn -> session["tracking_cookie"] end)
-      |> Phoenix.Component.assign_new(:ip_address, fn -> session["ip_address"] end)
-    }
+     socket
+     |> Phoenix.Component.assign_new(:tracking_cookie, fn -> session["tracking_cookie"] end)
+     |> Phoenix.Component.assign_new(:ip_address, fn -> session["ip_address"] end)}
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do

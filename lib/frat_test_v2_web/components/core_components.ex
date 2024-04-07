@@ -442,6 +442,88 @@ defmodule FratTestV2Web.CoreComponents do
     """
   end
 
+
+    @doc ~S"""
+  Renders a table with generic styling.
+
+  ## Examples
+
+      <.table id="users" rows={@users}>
+        <:col :let={user} label="id"><%= user.id %></:col>
+        <:col :let={user} label="username"><%= user.username %></:col>
+      </.table>
+  """
+  attr :id, :string, required: true
+  attr :rows, :list, required: true
+  attr :row_id, :any, default: nil, doc: "the function for generating the row id"
+  attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
+
+  attr :row_item, :any,
+    default: &Function.identity/1,
+    doc: "the function for mapping each row before calling the :col and :action slots"
+
+  slot :col, required: true do
+    attr :label, :string
+  end
+
+  slot :action, doc: "the slot for showing user actions in the last table column"
+
+  def invoice_table(assigns) do
+    assigns =
+      with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
+        assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
+      end
+
+    ~H"""
+      <table
+        aria-describedby="info-popup"
+        aria-label="open invoice"
+        class="border-t w-full min-h-0 h-full flex flex-col">
+        <thead class="flex w-full flex-col px-4">
+          <tr class="border-b flex">
+            <th :for={col <- @col} class="font-semibold text-left py-3 px-1 flex-1 truncate"><%= col[:label] %></th>
+            <th :if={@action != []} class="relative p-0 pb-4">
+              <span class="sr-only"><%= gettext("Actions") %></span>
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          id={@id}
+          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
+          class="flex w-full flex-col flex-1 min-h-0 overflow-hidden px-4"
+        >
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="hover:bg-blue-100 border-b flex cursor-pointer">
+            <td
+              :for={{col, i} <- Enum.with_index(@col)}
+              phx-click={@row_click && @row_click.(row)}
+              class={["text-left py-3 px-1 flex-1 truncate", @row_click && "hover:cursor-pointer"]}
+            >
+              <div class="block py-4 pr-6">
+                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
+                  <%= render_slot(col, @row_item.(row)) %>
+                </span>
+              </div>
+            </td>
+            <td :if={@action != []} class="relative w-14 p-0">
+              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
+
+                <span
+                  :for={action <- @action}
+                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                >
+                  <%= render_slot(action, @row_item.(row)) %>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    """
+  end
+
+
+
+
   @doc ~S"""
   Renders a table with generic styling.
 

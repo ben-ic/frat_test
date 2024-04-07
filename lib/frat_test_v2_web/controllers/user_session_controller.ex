@@ -13,16 +13,19 @@ defmodule FratTestV2Web.UserSessionController do
   def auth_otp(conn, params = %{"token" => token}) do
     case FratTestV2.Token.verify_and_validate(token) do
       {:ok, _claims} ->
-          conn |> put_session(:passed_otp, true) |> redirect(to: "/invoices") |> halt()
-      _ ->  conn |> redirect(to: "/login_challenge") |> halt()
+        conn |> put_session(:passed_otp, true) |> redirect(to: "/invoices") |> halt()
+
+      _ ->
+        conn |> redirect(to: "/login_challenge") |> halt()
     end
+
     # The home page is often custom made,
     # so skip the default app layout.
     conn |> redirect(to: "/invoices") |> halt()
   end
 
   def create(conn, %{"_action" => "registered"} = params) do
-    #create(conn, params, "Account created successfully!")
+    # create(conn, params, "Account created successfully!")
     conn
     |> put_flash(:info, "Account created successfully!")
     |> redirect(to: ~p"/")

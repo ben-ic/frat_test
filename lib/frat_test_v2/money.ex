@@ -26,7 +26,7 @@ defmodule FratTestV2.Money do
   def get_paid_invoices(user) do
     Repo.one(
       from i in Invoice,
-        where: i.user_id == ^user.id and i.status==:paid,
+        where: i.user_id == ^user.id and i.status == :paid,
         select: sum(i.amount),
         group_by: i.status
     )
@@ -35,32 +35,33 @@ defmodule FratTestV2.Money do
   def get_unpaid_invoices(user) do
     Repo.one(
       from i in Invoice,
-        where: i.user_id == ^user.id and i.status==:sent,
+        where: i.user_id == ^user.id and i.status == :sent,
         select: sum(i.amount),
         group_by: i.status
     )
   end
 
-
   def get_withdrawn_invoices(user) do
     Repo.one(
       from i in Invoice,
-        where: i.user_id == ^user.id and i.status==:withdrawn,
+        where: i.user_id == ^user.id and i.status == :withdrawn,
         select: sum(i.amount),
         group_by: i.status
     )
   end
 
   def withdraw_invoices(user) do
-    IO.inspect "WITHDRAW MONEY"
+    IO.inspect("WITHDRAW MONEY")
+
     from(
       i in Invoice,
-      where: i.user_id == ^user.id and i.status==:paid,
+      where: i.user_id == ^user.id and i.status == :paid,
       update: [set: [status: :withdrawn]]
     )
     |> Repo.update_all([])
-    |>IO.inspect
+    |> IO.inspect()
   end
+
   @doc """
   Gets a single invoice.
 
@@ -90,7 +91,8 @@ defmodule FratTestV2.Money do
 
   """
   def create_invoice(user, attrs \\ %{}) do
-    IO.inspect user
+    IO.inspect(user)
+
     %Invoice{}
     |> Invoice.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:user, user)

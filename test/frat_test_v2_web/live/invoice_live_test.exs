@@ -4,8 +4,18 @@ defmodule FratTestV2Web.InvoiceLiveTest do
   import Phoenix.LiveViewTest
   import FratTestV2.MoneyFixtures
 
-  @create_attrs %{status: 42, description: "some description", amount: 120.5, payor_email: "some payor_email"}
-  @update_attrs %{status: 43, description: "some updated description", amount: 456.7, payor_email: "some updated payor_email"}
+  @create_attrs %{
+    status: 42,
+    description: "some description",
+    amount: 120.5,
+    payor_email: "some payor_email"
+  }
+  @update_attrs %{
+    status: 43,
+    description: "some updated description",
+    amount: 456.7,
+    payor_email: "some updated payor_email"
+  }
   @invalid_attrs %{status: nil, description: nil, amount: nil, payor_email: nil}
 
   defp create_invoice(_) do

@@ -1,80 +1,9 @@
-<div class="w-full">
-    <div class="grid gap-4 lg:gap-8 md:grid-cols-3 p-8 pt-20">
-        
-        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-            <div class="space-y-2">
-                <div
-                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
-                    <span>Unpaid Invoices</span>
-                </div>
-
-                <div class="text-3xl text-white">
-                    <%= @unpaid_invoices %>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-            <div class="space-y-2">
-                <div
-                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
-
-                    <span>Paid Invoices</span>
-                </div>
-
-                <div class="text-3xl text-white">
-                    <%= @paid_invoices %>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-            <div class="space-y-2">
-                <div
-                    class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-200">
-
-                    <span>Withdrawn Amount</span>
-                </div>
-
-                <div class="text-3xl text-white">
-                    <%= @withdrawn_invoices %>
-                </div>
-                <.link patch={~p"/invoices/withdraw"} class="btn btn-sm">
-                  <.button>Withdraw Money</.button>
-                </.link>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
-<.header>
-  Listing Invoices
-  <:actions>
-    <.link patch={~p"/invoices/new"}>
-      <.button>New Invoice</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.table
-  id="invoices"
-  rows={@streams.invoices}
-  row_click={fn {_id, invoice} -> JS.navigate(~p"/invoices/#{invoice}") end}
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="invoice-modal"
+  show
+  on_cancel={JS.patch(~p"/invoices")}
 >
-  <:col :let={{_id, invoice}} label="Amount"><%= invoice.amount %></:col>
-  <:col :let={{_id, invoice}} label="Description"><%= invoice.description %></:col>
-  <:col :let={{_id, invoice}} label="Status"><%= invoice.status %></:col>
-  <:col :let={{_id, invoice}} label="Payor email"><%= invoice.payor_email %></:col>
-</.table>
-
-<.modal :if={@live_action in [:new, :edit]} id="invoice-modal" show on_cancel={JS.patch(~p"/invoices")}>
   <.live_component
     module={FratTestV2Web.InvoiceLive.FormComponent}
     id={@invoice.id || :new}
@@ -86,11 +15,16 @@
   />
 </.modal>
 
-<.modal :if={@live_action in [:withdraw]} id="withdraw-modal" show on_cancel={JS.patch(~p"/invoices")}>
+<.modal
+  :if={@live_action in [:withdraw]}
+  id="withdraw-modal"
+  show
+  on_cancel={JS.patch(~p"/invoices")}
+>
   <.live_component
     module={FratTestV2Web.InvoiceLive.WithdrawMoneyComponent}
     id={:withdraw}
-    paid_invoices = {@paid_invoices}
+    paid_invoices={@paid_invoices}
     title={@page_title}
     action={@live_action}
     current_user={@current_user}
@@ -98,3 +32,115 @@
   />
 </.modal>
 
+<header
+  aria-label="page caption"
+  class="flex-none flex h-16 bg-gray-100 border-t px-4 items-center"
+>
+  <h1 id="page-caption" class="font-semibold text-lg">Dashboard</h1>
+</header>
+<!-- main content -->
+<main class="flex-grow flex min-h-0 border-t">
+  <!-- section update to invoices -->
+  <section class="flex flex-col p-4 w-full max-w-sm flex-none bg-gray-100 min-h-0 overflow-auto">
+    <h1 class="font-semibold mb-3">
+      Tabbit Chat
+    </h1>
+    <form action="" id="chatForm">
+      <div class="mt-10 space-y-8 bg-white">
+        <input id="chat-input" type="text" />
+        <button
+          type="submit"
+          class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+        >
+          <svg
+            class="w-6 h-6 rotate-90"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z">
+            </path>
+          </svg>
+        </button>
+      </div>
+    </form>
+    <div phx-update="ignore" id="chatWidget">
+      <ul id="messages">
+      
+      </ul>
+    </div>
+  </section>
+  <section aria-label="main content" class="flex min-h-0 flex-col flex-auto border-l">
+    <!-- content navigation -->
+    <nav class="bg-gray-100 flex p-4">
+      <!-- stats nav -->
+      <section aria-labelledby="invoice-statistics-tabs-label" class="pb-2">
+        <label id="invoice-statistics-tabs-label" class="font-semibold block mb-1 text-sm">
+          Invoice Statistics <span class="font-normal text-gray-700"></span>
+        </label>
+        <ul class="flex">
+          <li>
+            <div class="focus:outline-none focus:bg-yellow-200 p-2 rounded-l-md border border-r-0 bg-white flex flex-col items-center w-24">
+              <p class="font-semibold text-lg">$<%= @unpaid_invoices %></p>
+              <p class="uppercase text-gray-600 text-sm">
+                Unpaid Amount
+              </p>
+            </div>
+          </li>
+          <li>
+            <div class="focus:outline-none focus:bg-yellow-200 p-2 border border-r-0 bg-white flex flex-col items-center w-24">
+              <p class="font-semibold text-lg">$<%= @paid_invoices %></p>
+              <p class="uppercase text-gray-600 text-sm">
+                Paid Amount
+              </p>
+            </div>
+          </li>
+
+          <li>
+            <div class="focus:outline-none focus:bg-yellow-200 p-2 border rounded-r-md bg-white flex flex-col items-center w-24">
+              <p class="font-semibold text-lg">$<%= @withdrawn_invoices %></p>
+              <p class="uppercase text-gray-600 text-sm">
+                Withdrawn
+                Amount
+              </p>
+            </div>
+          </li>
+          <li>
+            <.link patch={~p"/invoices/withdraw"} class="btn btn-sm mx-3">
+              <.button>Withdraw Money</.button>
+            </.link>
+          </li>
+        </ul>
+      </section>
+    </nav>
+
+    <header class="bg-white border-t flex items-center py-1 px-4">
+      <div class="flex">
+        <h2 id="content-caption" class="font-semibold">
+         Here are your invoices
+        </h2>
+      </div>
+      <div class="ml-auto">
+        <.link patch={~p"/invoices/new"}>
+          <.button
+            title="Create a new invoice"
+            aria-label="Create Invoice"
+            class="border rounded-md px-3 py-2 leading-none"
+          >
+            New Invoice
+          </.button>
+        </.link>
+      </div>
+    </header>
+    <.invoice_table
+      id="invoices"
+      rows={@streams.invoices}
+      row_click={fn {_id, invoice} -> JS.navigate(~p"/invoices/#{invoice}") end}
+    >
+      <:col :let={{_id, invoice}} label="Amount"><%= invoice.amount %></:col>
+      <:col :let={{_id, invoice}} label="Description"><%= invoice.description %></:col>
+      <:col :let={{_id, invoice}} label="Status"><%= invoice.status %></:col>
+      <:col :let={{_id, invoice}} label="Payor email"><%= invoice.payor_email %></:col>
+    </.invoice_table>
+  </section>
+</main>
