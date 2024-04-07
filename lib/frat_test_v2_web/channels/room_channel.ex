@@ -50,7 +50,7 @@ defmodule FratTestV2Web.RoomChannel do
   def handle_in("new_msg", %{"body" => body}, socket) do
     broadcast!(socket, "new_msg", %{
       from: "Tabbit",
-      body: "Hi, I am not very smart.  If you want to see your invoices, write in 'invoices'"
+      body: "Hi, I can't do a lot, but I can show you your invoices - just type 'invoices'"
     })
 
     {:noreply, socket}
