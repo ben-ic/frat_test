@@ -75,6 +75,8 @@ defmodule FratTestV2.Money do
   """
   def get_invoice!(id), do: Repo.get!(Invoice, id)
 
+  def get_invoice_by_uuid!(uuid), do: Repo.get_by!(Invoice, uuid: uuid)
+
   @doc """
   Creates a invoice.
 

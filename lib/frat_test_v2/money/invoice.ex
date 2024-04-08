@@ -7,6 +7,7 @@ defmodule FratTestV2.Money.Invoice do
     field :description, :string
     field :amount, :float
     field :payor_email, :string
+    field :uuid, Ecto.UUID, autogenerate: true
     belongs_to :user, FratTestV2.Accounts.User
 
     timestamps(type: :utc_datetime)

@@ -9,11 +9,12 @@ defmodule FratTestV2Web.InvoiceLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(%{"uuid" => uuid} = params, _, socket) do
+    IO.inspect params
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:invoice, Money.get_invoice!(id))}
+     |> assign(:invoice, Money.get_invoice_by_uuid!(uuid))}
   end
 
   defp page_title(:show), do: "Show Invoice"

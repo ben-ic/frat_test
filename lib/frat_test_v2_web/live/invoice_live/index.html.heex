@@ -135,7 +135,7 @@
     <.invoice_table
       id="invoices"
       rows={@streams.invoices}
-      row_click={fn {_id, invoice} -> JS.navigate(~p"/invoices/#{invoice}") end}
+      row_click={fn {_id, invoice} -> JS.navigate(~p"/invoices/#{invoice.uuid}") end}
     >
       <:col :let={{_id, invoice}} label="Amount"><%= invoice.amount %></:col>
       <:col :let={{_id, invoice}} label="Description"><%= invoice.description %></:col>

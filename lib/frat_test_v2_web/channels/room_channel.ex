@@ -33,9 +33,10 @@ defmodule FratTestV2Web.RoomChannel do
 
     message = Enum.reduce(invoices, "", fn
       invoice, acc ->
-        acc <> "<b>Invoice Number: #{invoice.id}</b><br/>
+        acc <> "<b>Invoice Id: #{invoice.uuid}</b><br/>
                 Amount: #{invoice.amount}<br/>
                 Payor: #{invoice.payor_email}<br/>
+                Description: #{invoice.description}<br/>
                 Status: #{invoice.status}<br/><br/>"
     end)
 

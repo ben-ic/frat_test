@@ -89,11 +89,11 @@ defmodule FratTestV2Web.Router do
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/invoices", InvoiceLive.Index, :index
       live "/invoices/new", InvoiceLive.Index, :new
-      live "/invoices/:id/edit", InvoiceLive.Index, :edit
+      live "/invoices/:uuid/edit", InvoiceLive.Index, :edit
       live "/invoices/withdraw", InvoiceLive.Index, :withdraw
 
-      live "/invoices/:id", InvoiceLive.Show, :show
-      live "/invoices/:id/show/edit", InvoiceLive.Show, :edit
+      live "/invoices/:uuid", InvoiceLive.Show, :show
+      live "/invoices/:uuid/show/edit", InvoiceLive.Show, :edit
     end
   end
 
