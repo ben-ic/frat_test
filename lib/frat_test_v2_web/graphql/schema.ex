@@ -5,9 +5,9 @@ defmodule FratTestV2Web.Graphql.Schema do
   alias FratTestV2Web.Graphql.Resolvers
 
   query do
-    @desc "Get all users"
-    field :users, list_of(:user) do
-      resolve(&Resolvers.User.list_users/3)
+    field :user, :user do
+      arg :id, non_null(:id)
+      resolve &Resolvers.User.find_user/3
     end
 
     field :otp, :otp do

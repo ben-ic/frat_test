@@ -65,6 +65,8 @@ defmodule FratTestV2.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user(id), do: Repo.get(User, id)
+
   ## User registration
 
   @doc """
