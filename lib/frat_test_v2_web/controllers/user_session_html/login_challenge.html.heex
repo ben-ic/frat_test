@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-sm">
   <form action="" id="otpForm">
     <.header class="text-center">
-      We sent you a 5 digit one time password to your cell phone
+      We sent you a 5 digit one time password to 1-800-tabbit
     </.header>
 
     <div class="mt-10 space-y-8 bg-white">
@@ -9,6 +9,8 @@
         type="text"
         id="otp_code"
         placeholder="Enter the OTP code"
+        pattern="\b\d{5}\b"
+        title="Please enter 5 digits"
         class="phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6"
       />
       <div class="mt-2 flex items-center justify-between gap-6">
