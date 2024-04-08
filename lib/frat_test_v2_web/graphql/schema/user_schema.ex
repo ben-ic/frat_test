@@ -4,6 +4,5 @@ defmodule FratTestV2Web.Graphql.Schema.UserSchema do
   object :user do
     field :id, :id
     field :email, :string
-    field :password, :string
   end
 end

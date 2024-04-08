@@ -10,6 +10,11 @@ defmodule FratTestV2.Accounts do
 
   ## Database getters
 
+  def list_users() do
+    User
+    |> Repo.all()
+  end
+
   @doc """
   Gets a user by email.
 
