@@ -23,6 +23,6 @@ defmodule FratTestV2Web.Graphql.Resolvers.Otp do
   end
 
   def otp_auth(_parent, args, _resolution) do
-    {:error, "Result must be success or failed"}
+    {:error, "Result must be passed or failed"}
   end
 end
